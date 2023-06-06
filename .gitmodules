@@ -1,0 +1,3 @@
+[submodule "colortracking"]
+	path = colortracking
+	url = https://github.com/freedomwebtech/colortracking
