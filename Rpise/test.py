@@ -35,5 +35,27 @@ def capturarColor(foto):
 	nombre= pathlib.Path(foto).stem + ".jpeg"
 	cv2.imwrite((nombre), green)
 	return nombre
-mostrar(capturarColor(sacarFoto()))
+	
+def enviarEstadoAgua():
+	img=cv2.imread(capturarColor(sacarFoto()))
+	hsv=cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+	negro=cv2.mean(hsv)
+	if negro[2]/255 < 10:
+		print("Error")
+		return "Error"
+	verde = cv2.inRange(hsv, lower_range, upper_range)
+	promedioHsv = cv2.mean(verde)
+	saturation=promedioHsv[1]/255
+	if saturation>80:
+		print("Listo")
+		return "Listo"
+	elif saturation>50:
+		print("En proceso")
+		return "En proceso"
+	else:
+		print("Empezando")
+		return "Empezando"
+	
+	
+enviarEstadoAgua()
 
