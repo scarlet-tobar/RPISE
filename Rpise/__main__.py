@@ -1,6 +1,6 @@
 import asyncio
 import gpio
-from websocket import connect_and_listen
+from ws import connect_and_listen
 
 def main():
     gpio.init()
@@ -14,3 +14,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    gpio.named_output("VALVE",True)

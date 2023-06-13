@@ -18,11 +18,11 @@ def init():
         GPIO.setup(pin, GPIO.OUT)
         GPIO.output(pin, GPIO.LOW)
 
-def cleanout():
+def cleanup():
     """
     Función helper para no importar GPIO.cleanout en otros modulos
     """
-    GPIO.cleanout()
+    GPIO.cleanup()
 
 def named_output(pinname:str, value:bool):
     """
@@ -30,7 +30,7 @@ def named_output(pinname:str, value:bool):
     comprueba que sea válido y luego setea el valor.
     """
     pin = GPIO_OUT_PINS.get(pinname)
-    if pin is None: 
-        valid_names = "', '".join(list(GPIO_OUT_PINS.items()))
+    if pin is None:
+        valid_names = "', '".join(GPIO_OUT_PINS.keys())
         raise AssertionError(f"<pinname> = '{pinname}' is not valid. Valid names: '{valid_names}'")
     GPIO.output(pin,value)
