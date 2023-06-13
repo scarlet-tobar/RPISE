@@ -5,5 +5,5 @@ CONSTANTES. Modificar a gusto
 GPIO_VALVE = 23
 GPIO_AC_LIGHT = 24
 GPIO_CAM_LIGHT = 25
-
+ESTANQUE = 1
 WEBSOCKET_BACKEND = "ws://localhost:8000" 
