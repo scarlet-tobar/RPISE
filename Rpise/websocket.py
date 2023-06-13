@@ -1,9 +1,12 @@
 import websockets
 import json
-from . import hardware
-from . import env
+from .env import GPIO_OUT_PINS, WS_SERVER_URL
+from . import gpio
 
 def parse_message(message):
+    """
+    Intenta convertir un mensaje de entrada en formato json a diccionario de python
+    """
     try:
         return json.loads(message)
     except ValueError:
@@ -11,28 +14,30 @@ def parse_message(message):
         return None
 
 def event(value):
+    """
+    Decorador para manejar mensajes que tengan clave { "event": <nombre> }
+    De coincidir con value, ejecuta el handler. De lo contrario, continua el pipeline.
+    """
     def decorator(func):
         def wrapper(message:dict):
-            if message.get("event") != value:
-                raise AssertionError(f"Invalid event. Expected '{value}', got '{message.get('event')}'")
-            return func(message)
+            if message.get("event") == value:
+                func(message)
+                return True
         return wrapper
     return decorator
 
-@event("PIN")
+@event("SET_PIN")
 def handle_pin_activator(data:dict):
-    pinname = data.get("pin")
+    """
+    Evento que se activa para modificar el valor de un pin.
+    """
+    pinname = data.get("pinname")
     assert pinname is not None
-    
-    pin = hardware.OUT_PINS.get(pinname)
-    if pin is None: 
-        valid_names = "', '".join(list(hardware.OUT_PINS.items()))
-        raise AssertionError(f"<pinname> = '{pinname}' is not valid. Valid names: '{valid_names}'")
     
     value = data.get("value")
     assert value is not None
     
-    hardware.output(pin, value)    
+    gpio.named_output(pinname, value)
 
 def handle_message(message):
     """
@@ -54,10 +59,14 @@ def handle_message(message):
         # more handlers here
     ]
     for h in handlers:
-        h(event)
+        if h(event):
+            break
 
 async def connect_and_listen():
-    async with websockets.connect(env.WEBSOCKET_BACKEND) as websocket:
+    """
+    Se conecta con el servidor de WebSocket y está listo para recibir mensajes.
+    """
+    async with websockets.connect(WS_SERVER_URL) as websocket:
         print("Connected to WebSocket server")
 
         while True:

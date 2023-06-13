@@ -1,16 +1,16 @@
 import asyncio
-from . import hardware
-from . import websocket
+from . import gpio
+from .websocket import connect_and_listen
 
 def main():
-    hardware.setup()
+    gpio.init()
+
     try:
-        asyncio.get_event_loop().run_until_complete(websocket.connect_and_listen())
+        asyncio.get_event_loop().run_until_complete(connect_and_listen())
     except KeyboardInterrupt:
         pass
     finally:
-        hardware.GPIO.cleanup()
+        gpio.cleanup()
 
 if __name__ == "__main__":
     main()
-    

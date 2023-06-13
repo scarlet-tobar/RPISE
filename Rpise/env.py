@@ -2,8 +2,10 @@
 CONSTANTES. Modificar a gusto
 """
 
-GPIO_VALVE = 23
-GPIO_AC_LIGHT = 24
-GPIO_CAM_LIGHT = 25
+WS_SERVER_URL = "ws://localhost:8000" 
 
-WEBSOCKET_BACKEND = "ws://localhost:8000" 
+GPIO_OUT_PINS = {
+    "VALVE" : 2,
+    "AC_LIGHT" : 3,
+    "CAM_LIGHT" : 4   
+}
