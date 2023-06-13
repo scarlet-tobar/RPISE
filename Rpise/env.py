@@ -9,3 +9,5 @@ GPIO_OUT_PINS = {
     "AC_LIGHT" : 3,
     "CAM_LIGHT" : 4   
 }
+
+ESTANQUE = 1
