@@ -15,9 +15,12 @@ OUT_PINS = {
 }
 
 def setup():
-    # Set up GPIO
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
     for pin in OUT_PINS.values():
         GPIO.setup(pin, GPIO.OUT)
         GPIO.output(pin, GPIO.LOW)
+
+def output(pin: int, value:bool):
+    v = GPIO.HIGH if value else GPIO.LOW
+    GPIO.output(pin, value)
