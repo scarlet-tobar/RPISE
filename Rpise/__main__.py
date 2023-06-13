@@ -1,6 +1,6 @@
 import asyncio
-from . import gpio
-from .websocket import connect_and_listen
+import gpio
+from websocket import connect_and_listen
 
 def main():
     gpio.init()

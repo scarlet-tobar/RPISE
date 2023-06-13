@@ -3,7 +3,7 @@ from datetime import datetime
 import cv2
 import numpy as np
 import pathlib
-import .env
+import env
 
 lower_range=np.array([31,0,0])
 upper_range=np.array([74,255,255])

@@ -1,7 +1,7 @@
 import websockets
 import json
-from .env import GPIO_OUT_PINS, WS_SERVER_URL
-from . import gpio
+from env import WS_SERVER_URL
+import gpio
 
 def parse_message(message):
     """
