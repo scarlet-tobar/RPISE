@@ -9,12 +9,18 @@ def parse_message(message):
     except ValueError:
         print("Couldn't handle message")
         return None
-    
-async def handle_message(message):
-    data = parse_message(message)
-    if data is None:
-        return 
-    
+
+def event(value):
+    def decorator(func):
+        def wrapper(message:dict):
+            if message.get("event") != value:
+                raise AssertionError(f"Invalid event. Expected '{value}', got '{message.get('event')}'")
+            return func(message)
+        return wrapper
+    return decorator
+
+@event("PIN")
+def handle_pin_activator(data:dict):
     pinname = data.get("pin")
     assert pinname is not None
     
@@ -26,7 +32,29 @@ async def handle_message(message):
     value = data.get("value")
     assert value is not None
     
-    hardware.output(pin, value)
+    hardware.output(pin, value)    
+
+def handle_message(message):
+    """
+    Maneja todos los mensajes que llegan desde el servidor.
+    El servidor debe mandar un mensaje con la estructura:
+    {
+        "event": <nombre del evento>,
+        ** <datos adicionales> 
+    }
+    """
+    data = parse_message(message)
+    assert data is not None
+    
+    event = data.get("event")
+    assert event is not None
+
+    handlers = [
+        handle_pin_activator,
+        # more handlers here
+    ]
+    for h in handlers:
+        h(event)
 
 async def connect_and_listen():
     async with websockets.connect(env.WEBSOCKET_BACKEND) as websocket:
@@ -35,7 +63,7 @@ async def connect_and_listen():
         while True:
             try:
                 message = await websocket.recv()
-                await handle_message(message)
+                handle_message(message)
             except websockets.exceptions.ConnectionClosed:
                 print("WebSocket connection closed. Reconnecting...")
                 break
