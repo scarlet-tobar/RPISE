@@ -41,20 +41,21 @@ def enviarEstadoAgua(): # Retorna Dateime, turbiedad, anomalía en una lista
 	img=cv2.imread(capturarColor(sacarFoto()))
 	hsv=cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 	negro=cv2.mean(hsv)
-	if negro[2]/255 < 10:
+	if negro[2]/255 < 1:
 		print("Error")
 		return [datetime.now(), -1, True] #Dateime, turbiedad, anomalía
 	verde = cv2.inRange(hsv, lower_range, upper_range)
 	promedioHsv = cv2.mean(verde)
 	saturation=promedioHsv[1]/255
-	if saturation>80:
+	print(saturation)
+	if saturation>0.80:
 		print("Listo")
-		return [datetime.now(), saturation/100, False]
-	elif saturation>50:
+		return [datetime.now(), saturation, False]
+	elif saturation>0.50:
 		print("En proceso")
-		return [datetime.now(), saturation/100, False]
+		return [datetime.now(), saturation, False]
 	else:
 		print("Empezando")
-		return [datetime.now(), saturation/100, True]
+		return [datetime.now(), saturation, True]
 
-
+enviarEstadoAgua(capturarColor(sacarFoto()))
