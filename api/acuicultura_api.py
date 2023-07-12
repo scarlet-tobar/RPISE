@@ -1,23 +1,14 @@
-from app.acuicultura_app import *
+from app import acuicultura_app
 from flask import Flask
 
 app = Flask(__name__)
 
-@app.route('/set/intensidad', methods=['GET','POST'])
-def setIntensidad():
-    return "configurtando intensidad"
+@app.route('/set/horario', methods=['POST'])
+def setLuz(id_estanque, horario_inicio, horario_termino):
+    print('horario inicio:', horario_inicio)
+    print('horario_termino:', horario_termino)
+    acuicultura_app.set_horario(id_estanque, horario_inicio, horario_termino)
 
-@app.route('/set/horario', methods=['GET','POST'])
-def setHorario():
-    return "configurtando horario"
-
-@app.route('/set/anormalidades', methods=['GET','POST'])
-def setAnormalidad():
-    return "configurtando anormailidades"
-
-@app.route('/set/liquido', methods=['GET','POST'])
-def setLiquido():
-    return "configurtando liquido"
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=105)
