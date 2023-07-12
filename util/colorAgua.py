@@ -3,7 +3,8 @@ from datetime import datetime
 import cv2
 import numpy as np
 import pathlib
-import env
+import RPi.GPIO as GPIO
+from env import GPIO_OUT_PINS
 
 lower_range=np.array([31,0,0])
 upper_range=np.array([74,255,255])
@@ -37,25 +38,32 @@ def capturarColor(foto):
 	cv2.imwrite((nombre), green)
 	return nombre
 	
-def enviarEstadoAgua(): # Retorna Dateime, turbiedad, anomalía en una lista
+def enviarEstadoAgua(): # Retorna Dateime, turbiedad, anomalía, luz en una lista
+	luz=0
+	pin = GPIO_OUT_PINS.get("AC_LIGHT")
+	pin=GPIO.input(pin)
+	if pin==1:
+		luz=True
+	else:
+		luz=False
 	img=cv2.imread(capturarColor(sacarFoto()))
 	hsv=cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 	negro=cv2.mean(hsv)
-	if negro[2]/255 < 1:
-		print("Error")
-		return [datetime.now(), -1, True] #Dateime, turbiedad, anomalía
 	verde = cv2.inRange(hsv, lower_range, upper_range)
 	promedioHsv = cv2.mean(verde)
 	saturation=promedioHsv[1]/255
 	print(saturation)
 	if saturation>0.80:
 		print("Listo")
-		return [datetime.now(), saturation, False]
+		return [datetime.now(), saturation, False, luz] #Dateime, turbiedad, anomalía, luz
 	elif saturation>0.50:
 		print("En proceso")
-		return [datetime.now(), saturation, False]
-	else:
+		return [datetime.now(), saturation, False, luz]
+	elif saturation>0.20:
 		print("Empezando")
-		return [datetime.now(), saturation, True]
+		return [datetime.now(), saturation, False, luz]
+	elif negro[2]/255 < 1:
+		print("Error")
+		return [datetime.now(), -1, True, luz] 
 
-enviarEstadoAgua(capturarColor(sacarFoto()))
+
