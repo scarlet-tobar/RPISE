@@ -2,8 +2,6 @@
 CONSTANTES. Modificar a gusto
 """
 
-WS_SERVER_URL = "ws://localhost:8000" 
-
 GPIO_OUT_PINS = {
     "VALVE" : 17,
     "AC_LIGHT" : 18,
