@@ -58,4 +58,4 @@ def enviarEstadoAgua(): # Retorna Dateime, turbiedad, anomalía en una lista
 		print("Empezando")
 		return [datetime.now(), saturation, True]
 
-enviarEstadoAgua(capturarColor(sacarFoto()))
+mostrar(sacarFoto())
