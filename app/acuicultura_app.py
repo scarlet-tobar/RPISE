@@ -6,9 +6,11 @@ connection = postgres_connection()
 
 @app.route('/set/horario', methods=['POST'])
 def set_horario():
-    id_estanque = request.form.get('id_estanque')
-    hora_inicio = request.form.get('hora_inicio')
-    hora_termino = request.form.get('hora_termino')
+    data= request.json
+    id_estanque = data['id_estanque']
+    hora_inicio = data['hora_inicio']
+    hora_termino = data['hora_termino']
+    print(request.json)
 
     if connection is not None:
         cursor = connection.cursor()
