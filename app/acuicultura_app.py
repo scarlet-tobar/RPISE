@@ -30,10 +30,11 @@ def set_luz():
 
 if __name__ == '__main__':
     if connection is not None:
+        gpio.init()
         app.run(host='0.0.0.0', port=2000)
     else:
         print('No se pudo establecer la conexión a la base de datos')
 
-
+gpio.cleanup()
 connection.close()
 print('Conexión cerrada')
