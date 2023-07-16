@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import pathlib
 import RPi.GPIO as GPIO
-from env import GPIO_OUT_PINS
+from utils.env import GPIO_OUT_PINS
 
 lower_range=np.array([31,0,0])
 upper_range=np.array([74,255,255])
