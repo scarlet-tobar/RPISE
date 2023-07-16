@@ -1,5 +1,8 @@
 from flask import Flask, request
 from db.db_connection import postgres_connection
+import utils.colorAgua as CA
+import utils.gpio as gpio
+
 
 app = Flask(__name__)
 connection = postgres_connection()
@@ -19,8 +22,11 @@ def set_horario():
 @app.route('/set/luz', methods=['POST'])
 def set_luz():
     data= request.json
-    print('se cambió el horario de:')
-    return "Horario actualizado"
+    luz=data[luz] #debe ser bool
+    gpio.named_output("AC_LIGHT",bool(luz))
+    #CA.enviarEstadoAgua()
+    print('se cambió la luz a: '+ luz)
+    return "luz actualizada"
 
 if __name__ == '__main__':
     if connection is not None:
