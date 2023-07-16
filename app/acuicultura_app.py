@@ -22,7 +22,7 @@ def set_horario():
 @app.route('/set/luz', methods=['POST'])
 def set_luz():
     data= request.json
-    luz=data[luz] #debe ser bool
+    luz=data["luz"] #debe ser bool
     gpio.named_output("AC_LIGHT",bool(luz))
     #CA.enviarEstadoAgua()
     print('se cambió la luz a: '+ luz)
