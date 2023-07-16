@@ -26,7 +26,7 @@ def set_horario():
     cursor.execute("UPDATE estanque SET hora_encendido = %s, hora_apagado = %s WHERE id_estanque = %s", (hora_inicio, hora_termino, id_estanque))
     connection.commit()
     
-    global current_id_estanque, current_hora_inicio, current_hora_termino
+
     current_id_estanque = id_estanque
     current_hora_inicio = hora_inicio
     current_hora_termino = hora_termino
@@ -45,7 +45,6 @@ def set_luz():
     gpio.named_output("AC_LIGHT", bool(luz))
     # CA.enviarEstadoAgua()
     
-    global current_luz
     current_luz = luz
     
     print('Se cambió la luz a:', luz)
