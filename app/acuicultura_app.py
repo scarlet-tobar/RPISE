@@ -2,7 +2,7 @@ from flask import Flask, request
 from db.db_connection import postgres_connection
 import utils.colorAgua as CA
 import utils.gpio as gpio
-
+from utils.env import GPIO_OUT_PINS
 
 app = Flask(__name__)
 connection = postgres_connection()
