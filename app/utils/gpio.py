@@ -6,7 +6,7 @@ Este módulo tiene por objetivo controlar los periféricos:
 """ 
 
 import RPi.GPIO as GPIO
-from env import GPIO_OUT_PINS
+from utils.env import GPIO_OUT_PINS
 
 def init():
     """
