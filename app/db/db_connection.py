@@ -1,10 +1,10 @@
 import psycopg2
 
 def postgres_connection():
-    host = 'se.skrlet13.xyz'
+    host = 'localhost'
     database = 'embebidos'
-    user = 'postgres'
-    password = 'embebidos'
+    user = 'pi'
+    password = 'raspberry'
 
     try:
         connection = psycopg2.connect(
