@@ -10,20 +10,24 @@ def set_horario():
     id_estanque = data['id_estanque']
     hora_inicio = data['hora_inicio']
     hora_termino = data['hora_termino']
-    print(request.json)
+    cursor = connection.cursor()
+    cursor.execute("UPDATE estanque SET hora_encendido = %s, hora_apagado = %s WHERE id_estanque = %s", (hora_inicio, hora_termino, id_estanque))
+    connection.commit()
+    print('se cambió el horario de:', id_estanque)
+    return "Horario actualizado"
 
-    if connection is not None:
-        cursor = connection.cursor()
-        cursor.execute("UPDATE estanque SET hora_encendido = %s, hora_apagado = %s WHERE id_estanque = %s", (hora_inicio, hora_termino, id_estanque))
-        connection.commit()
-        print('se cambió el horario de:', id_estanque)
-    else:
-        print('No se pudo establecer la conexión a la base de datos')
-
+@app.route('/set/luz', methods=['POST'])
+def set_luz():
+    data= request.json
+    print('se cambió el horario de:')
     return "Horario actualizado"
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=2000)
+    if connection is not None:
+        app.run(host='0.0.0.0', port=2000)
+    else:
+        print('No se pudo establecer la conexión a la base de datos')
+
 
 connection.close()
 print('Conexión cerrada')
