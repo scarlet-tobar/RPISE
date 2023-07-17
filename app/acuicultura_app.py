@@ -50,6 +50,16 @@ def set_luz():
     print('Se cambió la luz a:', luz)
     return "Luz actualizada"
 
+def set_medicion():
+    id_estanque = request.json.get('id_estanque') #Obtiene el id_estanque que hace la medicion
+    data = CA.enviarEstadoAgua() #Obtiene array con Datetime, turbiedad, anomalía, luz en una lista
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO medicion (id_estanque, luz, nivel_turbiedad, nivel_maduracion, anomalia, fecha_medicion) VALUES (%s, %s, %s, %s, %s, %s)", (id_estanque, data[3], data[1], data[1], data[2], data[0]))
+    connection.commit()
+
+    print("Se realizo medicion con los datos: ", data)
+    return "Medición realizada"
+
 if __name__ == '__main__':
     if connection is not None:
         gpio.init()
