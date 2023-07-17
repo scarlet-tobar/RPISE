@@ -50,6 +50,7 @@ def set_luz():
     print('Se cambió la luz a:', luz)
     return "Luz actualizada"
 
+@app.route('/set/medicion', methods=['POST'])
 def set_medicion():
     id_estanque = request.json.get('id_estanque') #Obtiene el id_estanque que hace la medicion
     data = CA.enviarEstadoAgua() #Obtiene array con Datetime, turbiedad, anomalía, luz en una lista
