@@ -18,19 +18,16 @@ def set_horario():
     id_estanque = data.get('id_estanque')
     hora_inicio = data.get('hora_inicio')
     hora_termino = data.get('hora_termino')
-    
-    if id_estanque == current_id_estanque and hora_inicio == current_hora_inicio and hora_termino == current_hora_termino:
-        return "Datos iguales, no se realiza la actualización"
-    
+
     cursor = connection.cursor()
     cursor.execute("UPDATE estanque SET hora_encendido = %s, hora_apagado = %s WHERE id_estanque = %s", (hora_inicio, hora_termino, id_estanque))
     connection.commit()
-    
+
 
     current_id_estanque = id_estanque
     current_hora_inicio = hora_inicio
     current_hora_termino = hora_termino
-    
+
     print('Se cambió el horario de:', id_estanque)
     return "Horario actualizado"
 
@@ -38,15 +35,10 @@ def set_horario():
 def set_luz():
     data = request.json
     luz = data.get("luz")  # debe ser bool
-    
-    if luz == current_luz:
-        return "Datos iguales, no se realiza la actualización"
-    
+
     gpio.named_output("AC_LIGHT", bool(luz))
     # CA.enviarEstadoAgua()
-    
-    current_luz = luz
-    
+
     print('Se cambió la luz a:', luz)
     return "Luz actualizada"
 
