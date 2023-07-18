@@ -40,6 +40,7 @@ def set_horario():
 @app.route('/set/luz', methods=['POST'])
 def set_luz():
     data = request.json
+    print(data)
     id_estanque = data.get('id_estanque')
     luz = data.get('luz')
 
