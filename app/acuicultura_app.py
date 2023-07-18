@@ -23,11 +23,6 @@ def set_horario():
     cursor.execute("UPDATE estanque SET hora_encendido = %s, hora_apagado = %s WHERE id_estanque = %s", (hora_inicio, hora_termino, id_estanque))
     connection.commit()
 
-
-    current_id_estanque = id_estanque
-    current_hora_inicio = hora_inicio
-    current_hora_termino = hora_termino
-
     print('Se cambió el horario de:', id_estanque)
     return "Horario actualizado"
 
