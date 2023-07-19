@@ -3,7 +3,6 @@ from flask_caching import Cache
 from db.db_connection import postgres_connection
 import utils.colorAgua as CA
 import utils.gpio as gpio
-from utils.env import GPIO_OUT_PINS
 
 app = Flask(__name__)
 cache = Cache(app)
@@ -40,7 +39,6 @@ def set_horario():
 @app.route('/set/luz', methods=['POST'])
 def set_luz():
     data = request.json
-    print(data)
     id_estanque = data.get('id_estanque')
     luz = data.get('luz')
 
@@ -50,28 +48,27 @@ def set_luz():
 
     if cached_luz == luz:
         return "La luz es la misma, no se realizó ningún cambio"
-
+    print(bool(luz))
     gpio.named_output("AC_LIGHT", bool(luz))
     cursor = connection.cursor()
     cursor.execute("UPDATE estanque SET luz_encendida = %s WHERE id_estanque = %s", (luz, id_estanque))
     connection.commit()
-
     # Actualizar el valor en caché
     cache.set(cache_key, luz)
 
     print('Se cambió la luz de:', id_estanque)
     return "Luz actualizada"
 
-# @app.route('/set/medicion', methods=['POST'])
-# def set_medicion():
-#     id_estanque = request.json.get('id_estanque') #Obtiene el id_estanque que hace la medicion
-#     data = CA.enviarEstadoAgua() #Obtiene array con Datetime, turbiedad, anomalía, luz en una lista
-#     cursor = connection.cursor()
-#     cursor.execute("INSERT INTO medicion (id_estanque, luz, nivel_turbiedad, nivel_maduracion, anomalia, fecha_medicion) VALUES (%s, %s, %s, %s, %s, %s)", (id_estanque, data[3], data[1], data[1], data[2], data[0]))
-#     connection.commit()
+@app.route('/set/medicion', methods=['POST'])
+def set_medicion():
+    id_estanque = request.json.get('id_estanque') #Obtiene el id_estanque que hace la medicion
+    data = CA.enviarEstadoAgua() #Obtiene array con Datetime, turbiedad, anomalía, luz en una lista
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO medicion (id_estanque, luz, nivel_turbiedad, nivel_maduracion, anomalia, fecha_medicion) VALUES (%s, %s, %s, %s, %s, %s)", (id_estanque, data[3], data[1], data[1], data[2], data[0]))
+    connection.commit()
 
-#     print("Se realizo medicion con los datos: ", data)
-#     return "Medición realizada"
+    print("Se realizo medicion con los datos: ", data)
+    return "Medición realizada"
 
 if __name__ == '__main__':
     if connection is not None:
