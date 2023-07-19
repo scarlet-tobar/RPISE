@@ -20,7 +20,7 @@ def generate_frame():
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('app/index.html')
 
 @app.route('/video_feed')
 def video_feed():

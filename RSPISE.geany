@@ -28,15 +28,14 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=7
+current_page=4
 FILE_NAME_0=5142;None;0;EUTF-8;1;1;1;%2Fhome%2Fpi%2FRPISE%2F.gitignore;0;4
 FILE_NAME_1=42;Python;0;EUTF-8;0;1;1;%2Fhome%2Fpi%2FRPISE%2Fcolortracking%2Ftrack.py;0;5
 FILE_NAME_2=109;Python;0;EUTF-8;0;1;1;%2Fhome%2Fpi%2FRPISE%2Fcolortracking%2Ftest.py;0;4
-FILE_NAME_3=61;Python;0;EUTF-8;0;1;1;%2Fhome%2Fpi%2FRPISE%2FRpise%2F__main__.py;0;4
-FILE_NAME_4=347;Python;0;EUTF-8;1;1;1;%2Fhome%2Fpi%2FRPISE%2FRpise%2Ftest_gpio.py;0;4
-FILE_NAME_5=133;Python;0;EUTF-8;0;1;1;%2Fhome%2Fpi%2FRPISE%2FRpise%2Fenv.py;0;4
-FILE_NAME_6=536;Python;0;EUTF-8;0;1;1;%2Fhome%2Fpi%2FRPISE%2FRpise%2Fgpio.py;0;4
-FILE_NAME_7=1038;Python;0;EUTF-8;1;1;1;%2Fhome%2Fpi%2FRPISE%2FRpise%2FcolorAgua.py;0;4
+FILE_NAME_3=851;Python;0;EUTF-8;0;1;1;%2Fhome%2Fpi%2FRPISE%2Fapp%2Fcamserver.py;0;4
+FILE_NAME_4=397;Python;0;EUTF-8;1;1;1;%2Fhome%2Fpi%2FRPISE%2Fapp%2Futils%2FcolorAgua.py;0;4
+FILE_NAME_5=102;Python;0;EUTF-8;0;1;1;%2Fhome%2Fpi%2FRPISE%2Fapp%2Futils%2Fenv.py;0;4
+FILE_NAME_6=142;Python;0;EUTF-8;0;1;1;%2Fhome%2Fpi%2FRPISE%2Fapp%2Futils%2Fgpio.py;0;4
 
 [VTE]
 last_dir=/home/pi/RPISE
