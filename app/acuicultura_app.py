@@ -15,7 +15,7 @@ cache.init_app(app)
 
 def to_minutes(hora):
     h,m = hora.split(":")
-    return h * 60 + m
+    return int(h) * 60 + int(m)
 
 
 @app.route('/set/horario', methods=['POST'])
@@ -30,7 +30,7 @@ def set_horario():
     cached_horario = cache.get(cache_key)
 
     if cached_horario and cached_horario.get('hora_inicio') == hora_inicio and cached_horario.get('hora_termino') == hora_termino:
-        print("El horario es el mismo, no se realizó ningún cambio")
+        return ("El horario es el mismo, no se realizó ningún cambio")
 
     now = datetime.now().strftime("%H:%M")
     now = to_minutes(now)
