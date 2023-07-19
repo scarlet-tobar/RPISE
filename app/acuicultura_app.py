@@ -30,11 +30,11 @@ def set_horario():
 
     before = datetime.strptime(hora_inicio,"%H:%M")
     after = datetime.strptime(hora_termino,"%H:%M")
-
+    estado_luz= luz=="True"
 
     if (before > after):
         hora_inicio,hora_termino=hora_termino,hora_inicio
-        luz = luz!="True"
+        estado_luz= not estado_luz
 
     print(luz, hora_inicio,hora_termino)
     gpio.named_output("AC_LIGHT", luz=="True")
