@@ -5,6 +5,7 @@ import numpy as np
 import pathlib
 import RPi.GPIO as GPIO
 from utils.env import GPIO_OUT_PINS
+import gpio
 
 lower_range=np.array([31,0,0])
 upper_range=np.array([74,255,255])
@@ -66,4 +67,25 @@ def enviarEstadoAgua(): # Retorna Dateime, turbiedad, anomalía, luz en una list
 		print("Error")
 		return [datetime.now(), -1, True, luz] 
 
+if __name__ == "__main__":
+	import time
+	print("Testing COLOR AGUA")
+	gpio.init()
+	gpio.named_output("VALVE",True)
+	
+	time.sleep(2)
+	
+	gpio.named_output("CAM_LIGHT_1",True)
+	gpio.named_output("CAM_LIGHT_2",True)
+	
+	gpio.named_output("VALVE",False)
+
+	time.sleep(0.1)	
+	foto = sacarFoto()
+	time.sleep(0.1)
+	gpio.named_output("CAM_LIGHT_1",False)
+	gpio.named_output("CAM_LIGHT_2",False)
+	
+	#mostrar(foto)
+	
 
