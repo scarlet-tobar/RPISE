@@ -13,11 +13,6 @@ connection = postgres_connection()
 app.config['CACHE_TYPE'] = 'simple'  # Puedes usar otros tipos de caché según tus necesidades
 cache.init_app(app)
 
-def to_minutes(hora):
-    h,m = hora.split(":")
-    return int(h) * 60 + int(m)
-
-
 @app.route('/set/horario', methods=['POST'])
 def set_horario():
     data = request.json
@@ -33,8 +28,8 @@ def set_horario():
     if cached_horario and cached_horario.get('hora_inicio') == hora_inicio and cached_horario.get('hora_termino') == hora_termino and cached_horario.get('luz') == luz:
         return "El horario y el estado de luz son los mismos, no se realizó ningún cambio"
 
-    before = datetime.strftime(hora_inicio,"%H:%M")
-    after = datetime.strftime(hora_termino,"%H:%M")
+    before = datetime.strptime(hora_inicio,"%H:%M")
+    after = datetime.strptime(hora_termino,"%H:%M")
 
 
     if (before > after):
