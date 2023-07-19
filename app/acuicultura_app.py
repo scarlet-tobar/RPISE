@@ -28,8 +28,8 @@ def set_horario():
         return "El horario es el mismo, no se realizó ningún cambio"
 
     now = datetime.now().time()
-    before=datetime.strptime(hora_inicio, "%H:%M:%S").time()
-    after=datetime.strptime(hora_termino, "%H:%M:%S").time()
+    before=datetime.strptime(hora_inicio, "%H:%M").time()
+    after=datetime.strptime(hora_termino, "%H:%M").time()
     print(before,now ,after)
     if (before < now and now < after):
         gpio.named_output("AC_LIGHT",True)
