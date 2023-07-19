@@ -13,6 +13,11 @@ connection = postgres_connection()
 app.config['CACHE_TYPE'] = 'simple'  # Puedes usar otros tipos de caché según tus necesidades
 cache.init_app(app)
 
+def to_minutes(hora):
+    h,m = hora.split(":")
+    return h * 60 + m
+
+
 @app.route('/set/horario', methods=['POST'])
 def set_horario():
     data = request.json
@@ -25,16 +30,18 @@ def set_horario():
     cached_horario = cache.get(cache_key)
 
     if cached_horario and cached_horario.get('hora_inicio') == hora_inicio and cached_horario.get('hora_termino') == hora_termino:
-        return "El horario es el mismo, no se realizó ningún cambio"
+        print("El horario es el mismo, no se realizó ningún cambio")
 
-    now = datetime.now().time()
-    before=datetime.strptime(hora_inicio, "%H:%M").time()
-    after=datetime.strptime(hora_termino, "%H:%M").time()
-    print(before,now ,after)
-    if (before < now and now < after):
-        gpio.named_output("AC_LIGHT",True)
+    now = datetime.now().strftime("%H:%M")
+    now = to_minutes(now)
+    before = to_minutes(hora_inicio)
+    after = to_minutes(hora_termino)
+    print(before, now , after)
+
+    if (before < after):
+        gpio.named_output("AC_LIGHT",before < now and now < after)
     else:
-         gpio.named_output("AC_LIGHT",False)
+        gpio.named_output("AC_LIGHT",now < after or before < now)
 
     cursor = connection.cursor()
     cursor.execute("UPDATE estanque SET hora_encendido = %s, hora_apagado = %s WHERE id_estanque = %s", (hora_inicio, hora_termino, id_estanque))
