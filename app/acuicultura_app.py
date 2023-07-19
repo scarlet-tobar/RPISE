@@ -48,8 +48,7 @@ def set_luz():
 
     if cached_luz == luz:
         return "La luz es la misma, no se realizó ningún cambio"
-    print(bool(luz))
-    gpio.named_output("AC_LIGHT", bool(luz))
+    gpio.named_output("AC_LIGHT", luz=="True")
     cursor = connection.cursor()
     cursor.execute("UPDATE estanque SET luz_encendida = %s WHERE id_estanque = %s", (luz, id_estanque))
     connection.commit()
