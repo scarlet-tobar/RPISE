@@ -36,6 +36,7 @@ def set_horario():
         hora_inicio,hora_termino=hora_termino,hora_inicio
         luz = luz!="True"
 
+    print(luz, hora_inicio,hora_termino)
     gpio.named_output("AC_LIGHT", luz=="True")
     cursor = connection.cursor()
     cursor.execute("UPDATE estanque SET hora_encendido = %s, hora_apagado = %s, luz_encendida= %s WHERE id_estanque = %s", (hora_inicio, hora_termino, luz, id_estanque))
