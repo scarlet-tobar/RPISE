@@ -1,4 +1,4 @@
-import time
+import datetime
 from flask import Flask, request
 from flask_caching import Cache
 from db.db_connection import postgres_connection
@@ -27,9 +27,11 @@ def set_horario():
     if cached_horario and cached_horario.get('hora_inicio') == hora_inicio and cached_horario.get('hora_termino') == hora_termino:
         return "El horario es el mismo, no se realizó ningún cambio"
 
-    now = time.time()
-    print(hora_inicio,now , hora_termino)
-    if (hora_inicio < now and now < hora_termino):
+    now = datetime.now().time()
+    before=datetime.strptime(hora_inicio, "%H:%M:%S").time()
+    after=datetime.strptime(hora_termino, "%H:%M:%S").time()
+    print(before,now ,after)
+    if (before < now and now < after):
         gpio.named_output("AC_LIGHT",True)
     else:
          gpio.named_output("AC_LIGHT",False)
