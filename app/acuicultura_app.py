@@ -1,3 +1,4 @@
+import datetime
 from flask import Flask, request
 from flask_caching import Cache
 from db.db_connection import postgres_connection
@@ -25,6 +26,12 @@ def set_horario():
 
     if cached_horario and cached_horario.get('hora_inicio') == hora_inicio and cached_horario.get('hora_termino') == hora_termino:
         return "El horario es el mismo, no se realizó ningún cambio"
+
+    now = datetime.now().time()
+    if (hora_inicio < now < hora_termino):
+        gpio.named_output("AC_LIGHT",True)
+    else:
+         gpio.named_output("AC_LIGHT",False)
 
     cursor = connection.cursor()
     cursor.execute("UPDATE estanque SET hora_encendido = %s, hora_apagado = %s WHERE id_estanque = %s", (hora_inicio, hora_termino, id_estanque))
