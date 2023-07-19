@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from flask import Flask, request
 from flask_caching import Cache
 from db.db_connection import postgres_connection
