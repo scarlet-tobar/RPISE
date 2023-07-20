@@ -69,7 +69,7 @@ def update_luz():
         estado_luz= not estado_luz
         gpio.named_output("AC_LIGHT", estado_luz)
         cursor = connection.cursor()
-        cursor.execute("UPDATE estanque SET luz_encendida= %s WHERE id_estanque = %s", (hora_inicio, hora_termino, estado_luz, id_estanque))
+        cursor.execute("UPDATE estanque SET luz_encendida= %s WHERE id_estanque = %s", (estado_luz, id_estanque))
         connection.commit()
         print("actualizado el estado de luz del estanque: ",id_estanque)
 
