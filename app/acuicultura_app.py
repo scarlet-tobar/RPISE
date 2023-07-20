@@ -4,6 +4,7 @@ from flask_caching import Cache
 from db.db_connection import postgres_connection
 import utils.colorAgua as CA
 import utils.gpio as gpio
+import time
 
 app = Flask(__name__)
 cache = Cache(app)
@@ -75,15 +76,27 @@ def update_luz():
 
     return "revisado"
 
+last_measure = 0
+
 @app.route('/set/medicion', methods=['POST'])
 def set_medicion():
+    global last_measure
+    if time.time() - last_measure < 5:
+        print("Medicion no realizada")
+        return make_response("Medición no realizada", 400)
+    
     id_estanque = request.json.get('id_estanque') #Obtiene el id_estanque que hace la medicion
-    data = CA.enviarEstadoAgua() #Obtiene array con Datetime, turbiedad, anomalía, luz en una lista
+    water_status, is_black = CA.doWaterMeasure() #Obtiene array con Datetime, turbiedad, anomalía, luz en una lista
     cursor = connection.cursor()
-    cursor.execute("INSERT INTO medicion (id_estanque, nivel_turbiedad,nivel_maduracion,fecha) VALUES (%s,0,%s,now())", (id_estanque,data[0]))
+    if is_black:
+        cursor.execute("INSERT INTO anomalia (id_estanque, fecha,anomalia,descripcion) VALUES (%s,now(),%s,%s)", (id_estanque,True,"La fotografia capturada es oscura o negra"))
+        #anomalia
+    else:
+        cursor.execute("INSERT INTO medicion (id_estanque, nivel_turbiedad,nivel_maduracion,fecha) VALUES (%s,0,%s,now())", (id_estanque,water_status))
     connection.commit()
 
-    print("Se realizo medicion con los datos: ", data)
+    print("Se realizo medicion con los datos: ", water_status, is_black)
+    last_measure = time.time()
     return "Medición realizada"
 
 if __name__ == '__main__':

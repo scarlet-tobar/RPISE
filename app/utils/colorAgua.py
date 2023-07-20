@@ -5,7 +5,7 @@ import numpy as np
 import pathlib
 import RPi.GPIO as GPIO
 from utils.env import GPIO_OUT_PINS
-import utils.gpio
+from utils import gpio
 import time
 
 
@@ -13,33 +13,36 @@ lower_range=np.array([31,0,0])
 upper_range=np.array([74,255,255])
 
 def take_photo(filename):
-	cam = picamera.PiCamera()
-	cam.capture(filename)
-	cam.close()
-	img = cv2.imread(filename)
-	img = img[0:360,120:1160]
-	cv2.imwrite(filename, img)
-	return img
-	
+    try:
+        cam = picamera.PiCamera()
+        cam.capture(filename)
+        cam.close()
+        img = cv2.imread(filename)
+        img = img[0:360,120:1160]
+        cv2.imwrite(filename, img)
+        return img
+    except:
+        return None
+
 def is_dark(image,threshold):
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     brightness = np.mean(gray_image) < threshold
     return brightness
 
 def captureColor(img):
-	hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-	mask = cv2.inRange(hsv, lower_range, upper_range)
-	imask = mask>0
-	green = np.zeros_like(img, np.uint8)
-	green[imask] = img[imask]
-	return green
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    mask = cv2.inRange(hsv, lower_range, upper_range)
+    imask = mask>0
+    green = np.zeros_like(img, np.uint8)
+    green[imask] = img[imask]
+    return green
 
 def getLightStatus():
-	p = [False,False]
-	for i in (1,2):
-		pin = GPIO_OUT_PINS.get("CAM_LIGHT_" + str(i) )
-		p[i - 1] = GPIO.input(pin) 
-	return p
+    p = [False,False]
+    for i in (1,2):
+        pin = GPIO_OUT_PINS.get("CAM_LIGHT_" + str(i) )
+        p[i - 1] = GPIO.input(pin) 
+    return p
 
 
 def linear_map_and_clamp(value, in_min, in_max, out_min, out_max):
@@ -75,29 +78,30 @@ def getWaterStatus(img):
         return linear_map_and_clamp(avg_green,10,75,0,1)
 
 def doWaterMeasure():
-	gpio.init()
-	gpio.named_output("VALVE",True)
-	
-	time.sleep(1)
-	
-	gpio.named_output("CAM_LIGHT_1",True)
-	gpio.named_output("CAM_LIGHT_2",True)
-	
-	gpio.named_output("VALVE",False)
+    gpio.init()
+    gpio.named_output("VALVE",True)
+    
+    time.sleep(1)
+    
+    gpio.named_output("CAM_LIGHT_1",True)
+    gpio.named_output("CAM_LIGHT_2",True)
+    
+    gpio.named_output("VALVE",False)
 
-	time.sleep(0.1)	
-	
-	image = take_photo("measure.jpeg")
+    time.sleep(0.1)	
+    
+    image = take_photo("measure.jpeg")
+    if image is None:
+        return [0,True]
 
-	time.sleep(0.1)	
-	
-	gpio.named_output("CAM_LIGHT_1",False)
-	gpio.named_output("CAM_LIGHT_2",False)
-	
-	is_black = is_dark(image,20)
-	led_status = getLightStatus()
-	
-	green_filter = captureColor(image)
-	water_status = getWaterStatus(green_filter)
-	
+    time.sleep(0.1)	
+    
+    gpio.named_output("CAM_LIGHT_1",False)
+    gpio.named_output("CAM_LIGHT_2",False)
+    is_black = is_dark(image,20)
+    led_status = getLightStatus()
+    
+    green_filter = captureColor(image)
+    water_status = getWaterStatus(green_filter)
+    
     return [ water_status, is_black ]
