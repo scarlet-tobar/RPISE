@@ -30,7 +30,7 @@ def set_horario():
 
     now = datetime.now().time()
     before = datetime.strptime(hora_inicio,"%H:%M").time()
-    after = datetime.strptime(hora_termino,"%H:%M")
+    after = datetime.strptime(hora_termino,"%H:%M").time()
     estado_luz= luz=="True"
 
     if (before > after):
