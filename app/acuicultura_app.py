@@ -37,7 +37,7 @@ def set_horario():
         before,after=after,before
         estado_luz=not estado_luz
 
-    if not (before < now and now < after and luz):
+    if not (before < now and now < after ):
         estado_luz= not estado_luz
 
     gpio.named_output("AC_LIGHT", estado_luz)
