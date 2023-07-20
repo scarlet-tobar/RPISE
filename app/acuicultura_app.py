@@ -48,7 +48,7 @@ def set_horario():
     cache.set(cache_key, {'hora_inicio': hora_inicio, 'hora_termino': hora_termino, 'luz': luz})
 
     # Devolver el estado actual del horario y la luz como parte de la respuesta JSON
-    return
+    return "finalizado"
 
 
 @app.route('/set/luz', methods=['POST'])
