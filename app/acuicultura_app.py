@@ -46,7 +46,34 @@ def set_horario():
     cache.set(cache_key, {'hora_inicio': hora_inicio, 'hora_termino': hora_termino, 'luz': luz})
 
     print('Se cambió el horario de:', id_estanque)
-    return "Horario y estado de luz actualizados"
+    return {"hora_inicio": hora_inicio,
+            "hora_termino": hora_termino,
+            "luz":luz}
+
+
+@app.route('/set/luz', methods=['POST'])
+def set_luz():
+    data = request.json
+    id_estanque = data.get('id_estanque')
+    hora_inicio = data.get('hora_inicio')  # Hora de encendido en formato "HH:MM"
+    hora_termino = data.get('hora_termino')  # Hora de apagado en formato "HH:MM"
+    luz = data.get('luz')  # Estado de la luz, True o False
+
+    # Obtener la hora actual del sistema
+    hora_actual = datetime.now().time()
+
+    # Convertir las horas de encendido y apagado a objetos time
+    hora_encendido = datetime.strptime(hora_inicio, "%H:%M").time()
+    hora_apagado = datetime.strptime(hora_termino, "%H:%M").time()
+
+    # Verificar si la hora actual está después del horario de apagado
+    if hora_actual >= hora_apagado:
+        luz = False  # Apagar la luz
+
+    # ... Resto del código para actualizar el estado de la luz en la base de datos o dispositivo GPIO ...
+
+    return "Estado de la luz actualizado"
+
 
 # @app.route('/set/medicion', methods=['POST'])
 # def set_medicion():
