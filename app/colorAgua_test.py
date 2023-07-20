@@ -14,9 +14,13 @@ if __name__ == "__main__":
 	
 	gpio.named_output("VALVE",False)
 
-	time.sleep(0.05)	
+	time.sleep(0.1)	
 	
 	image = colorAgua.take_photo("_capture.jpeg")
+	time.sleep(0.1)	
+	
+	gpio.named_output("CAM_LIGHT_1",False)
+	gpio.named_output("CAM_LIGHT_2",False)
 	
 	is_black = colorAgua.is_dark(image,20)
 	print("IS BLACK",is_black)
@@ -30,8 +34,6 @@ if __name__ == "__main__":
 	water_status = colorAgua.getWaterStatus(green_filter)
 	print("WATER STATUS:",water_status)
 	
-	gpio.named_output("CAM_LIGHT_1",False)
-	gpio.named_output("CAM_LIGHT_2",False)
 	
 	#mostrar(foto)
 	

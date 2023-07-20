@@ -39,7 +39,17 @@ def getLightStatus():
 		pin = GPIO_OUT_PINS.get("CAM_LIGHT_" + str(i) )
 		p[i - 1] = GPIO.input(pin) 
 	return p
-	
+
+
+def linear_map_and_clamp(value, in_min, in_max, out_min, out_max):
+    # Perform linear mapping
+    mapped_value = (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+    
+    # Clamp the value within the output range
+    mapped_value = max(min(mapped_value, out_max), out_min)
+    
+    return mapped_value
+
 def getWaterStatus(img):
     # Convert the image to HSV color space
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -49,11 +59,16 @@ def getWaterStatus(img):
     
     # Calculate the average value of non-zero green pixels
     green_pixels = green_channel[green_channel > 0]
-    avg_green = np.mean(green_pixels)
-    
+    if green_pixels.size == 0:
+        avg_green = 0.0
+    else:
+        avg_green = np.mean(green_pixels)
+
     # Calculate the ratio of non-zero green pixels to all pixels
     total_pixels = green_channel.size
     green_pixel_count = np.count_nonzero(green_channel) #there is an error here. count just non-zero values
     pixel_count_ratio = green_pixel_count / total_pixels
-    
-    return (avg_green, pixel_count_ratio)
+    if pixel_count_ratio < 0.05:
+        return 0
+    else:
+        return linear_map_and_clamp(avg_green,10,75,0,1)
