@@ -61,6 +61,13 @@ def update_luz():
     hora_termino = data.get('hora_termino')
     luz = data.get('luz')
 
+    # Obtener el caché de luz
+    cache_key = f'luz_{id_estanque}'
+    cached_luz = cache.get(cache_key)
+
+    if cached_luz is not None and cached_luz == luz:
+        return "El estado de luz es el mismo, no se realizó ningún cambio"
+
     now = datetime.now().time()
     before = datetime.strptime(hora_inicio,"%H:%M").time()
     after = datetime.strptime(hora_termino,"%H:%M").time()
@@ -72,6 +79,7 @@ def update_luz():
         cursor = connection.cursor()
         cursor.execute("UPDATE estanque SET luz_encendida= %s WHERE id_estanque = %s", (estado_luz, id_estanque))
         connection.commit()
+        cache[cache_key] = luz
         print("actualizado el estado de luz del estanque: ",id_estanque)
 
     return "revisado"
