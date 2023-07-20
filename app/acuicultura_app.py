@@ -12,6 +12,7 @@ connection = postgres_connection()
 # Configuración de Flask-Caching
 app.config['CACHE_TYPE'] = 'simple'  # Puedes usar otros tipos de caché según tus necesidades
 cache.init_app(app)
+
 @app.route('/set/horario', methods=['POST'])
 def set_horario():
     data = request.json
@@ -29,26 +30,30 @@ def set_horario():
 
     now = datetime.now().time()
     before = datetime.strptime(hora_inicio,"%H:%M").time()
-    after = datetime.strptime(hora_termino,"%H:%M").time()
-    estado_luz = luz == "True"
+    after = datetime.strptime(hora_termino,"%H:%M")
+    estado_luz= luz=="True"
 
     if (before > after):
-        hora_inicio, hora_termino = hora_termino, hora_inicio
-        estado_luz = not estado_luz
+        hora_inicio,hora_termino=hora_termino,hora_inicio
 
-    # Verificar si la hora actual está dentro del rango de encendido y apagado
-    if before <= now <= after:
-        # Si está dentro del rango, actualizar el estado de la luz según lo establecido
+    if (before < now and now < after):
         gpio.named_output("AC_LIGHT", estado_luz)
     else:
-        # Si está fuera del rango, apagar la luz
-        gpio.named_output("AC_LIGHT", False)
+        gpio.named_output("AC_LIGHT", not estado_luz)
 
-    # Actualizar el estado del horario y la luz en el caché
+    print(luz, hora_inicio,hora_termino)
+
+    cursor = connection.cursor()
+    cursor.execute("UPDATE estanque SET hora_encendido = %s, hora_apagado = %s, luz_encendida= %s WHERE id_estanque = %s", (hora_inicio, hora_termino, luz, id_estanque))
+    connection.commit()
+
+    # Actualizar los valores en caché
     cache.set(cache_key, {'hora_inicio': hora_inicio, 'hora_termino': hora_termino, 'luz': luz})
 
-    # Devolver el estado actual del horario y la luz como parte de la respuesta JSON
-    return "finalizado"
+    print('Se cambió el horario de:', id_estanque)
+    return jsonify({"hora_inicio": hora_inicio,
+            "hora_termino": hora_termino,
+            "luz":luz})
 
 
 @app.route('/set/luz', methods=['POST'])
