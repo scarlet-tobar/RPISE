@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask, request,jsonify
+from flask import Flask, request
 from flask_caching import Cache
 from db.db_connection import postgres_connection
 import utils.colorAgua as CA
@@ -75,18 +75,16 @@ def update_luz():
 
     return "revisado"
 
+@app.route('/set/medicion', methods=['POST'])
+def set_medicion():
+    id_estanque = request.json.get('id_estanque') #Obtiene el id_estanque que hace la medicion
+    data = CA.enviarEstadoAgua() #Obtiene array con Datetime, turbiedad, anomalía, luz en una lista
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO medicion (id_estanque, nivel_turbiedad,nivel_maduracion,fecha) VALUES (%s,0,%s,now())", (id_estanque,data[0]))
+    connection.commit()
 
-
-# @app.route('/set/medicion', methods=['POST'])
-# def set_medicion():
-#     id_estanque = request.json.get('id_estanque') #Obtiene el id_estanque que hace la medicion
-#     data = CA.enviarEstadoAgua() #Obtiene array con Datetime, turbiedad, anomalía, luz en una lista
-#     cursor = connection.cursor()
-#     cursor.execute("INSERT INTO medicion (id_estanque, luz, nivel_turbiedad, nivel_maduracion, anomalia, fecha_medicion) VALUES (%s, %s, %s, %s, %s, %s)", (id_estanque, data[3], data[1], data[1], data[2], data[0]))
-#     connection.commit()
-
-#     print("Se realizo medicion con los datos: ", data)
-#     return "Medición realizada"
+    print("Se realizo medicion con los datos: ", data)
+    return "Medición realizada"
 
 if __name__ == '__main__':
     if connection is not None:
