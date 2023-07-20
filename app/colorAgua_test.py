@@ -35,5 +35,5 @@ if __name__ == "__main__":
 	print("WATER STATUS:",water_status)
 	
 	
-	#mostrar(foto)
+	# mostrar(foto)
 	

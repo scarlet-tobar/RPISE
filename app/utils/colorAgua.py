@@ -6,6 +6,7 @@ import pathlib
 import RPi.GPIO as GPIO
 from utils.env import GPIO_OUT_PINS
 import utils.gpio
+import time
 
 
 lower_range=np.array([31,0,0])
@@ -72,3 +73,31 @@ def getWaterStatus(img):
         return 0
     else:
         return linear_map_and_clamp(avg_green,10,75,0,1)
+
+def doWaterMeasure():
+	gpio.init()
+	gpio.named_output("VALVE",True)
+	
+	time.sleep(1)
+	
+	gpio.named_output("CAM_LIGHT_1",True)
+	gpio.named_output("CAM_LIGHT_2",True)
+	
+	gpio.named_output("VALVE",False)
+
+	time.sleep(0.1)	
+	
+	image = take_photo("measure.jpeg")
+
+	time.sleep(0.1)	
+	
+	gpio.named_output("CAM_LIGHT_1",False)
+	gpio.named_output("CAM_LIGHT_2",False)
+	
+	is_black = is_dark(image,20)
+	led_status = getLightStatus()
+	
+	green_filter = captureColor(image)
+	water_status = getWaterStatus(green_filter)
+	
+    return [ water_status, is_black ]
