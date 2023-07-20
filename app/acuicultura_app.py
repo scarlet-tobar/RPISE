@@ -29,8 +29,8 @@ def set_horario():
         return "El horario y el estado de luz son los mismos, no se realizó ningún cambio"
 
     now = datetime.now().time()
-    before = datetime.strptime(hora_inicio,"%H:%M")
-    after = datetime.strptime(hora_termino,"%H:%M")
+    before = datetime.strptime(hora_inicio,"%H:%M").time()
+    after = datetime.strptime(hora_termino,"%H:%M").time()
     estado_luz= luz=="True"
 
     if (before > after):
