@@ -43,7 +43,7 @@ def set_horario():
     gpio.named_output("AC_LIGHT", estado_luz)
 
     cursor = connection.cursor()
-    cursor.execute("UPDATE estanque SET hora_encendido = %s, hora_apagado = %s, luz_encendida= %s WHERE id_estanque = %s", (hora_inicio, hora_termino, estado_luz, id_estanque))
+    cursor.execute("UPDATE estanque SET hora_encendido = %s, hora_apagado = %s, luz_encendida= %s WHERE id_estanque = %s", (before, after, estado_luz, id_estanque))
     connection.commit()
 
     # Actualizar los valores en caché
