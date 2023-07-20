@@ -5,65 +5,55 @@ import numpy as np
 import pathlib
 import RPi.GPIO as GPIO
 from utils.env import GPIO_OUT_PINS
+import utils.gpio
+
 
 lower_range=np.array([31,0,0])
 upper_range=np.array([74,255,255])
 
-def sacarFoto():
-	camara = picamera.PiCamera()
-	now = datetime.now()
-	nombre=now.strftime("%Y-%m-%d-%H-%M-%S")  +".jpeg"
-	foto=camara.capture(nombre)
-	camara.close()
-	return nombre
+def take_photo(filename):
+	cam = picamera.PiCamera()
+	cam.capture(filename)
+	cam.close()
+	img = cv2.imread(filename)
+	img = img[0:360,120:1160]
+	cv2.imwrite(filename, img)
+	return img
 	
-#sacarFoto()
+def is_dark(image,threshold):
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    brightness = np.mean(gray_image) < threshold
+    return brightness
 
-def mostrar(foto):
-	img=cv2.imread(foto)			    
-	cv2.imshow("imagen",img)
-	cv2.waitKey(0)
-	cv2.destroyAllWindows()
-
-#mostrar('2023-06-01-11-03-08.jpeg')
-
-def capturarColor(foto):
-	img=cv2.imread(foto)
+def captureColor(img):
 	hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 	mask = cv2.inRange(hsv, lower_range, upper_range)
 	imask = mask>0
 	green = np.zeros_like(img, np.uint8)
 	green[imask] = img[imask]
-	nombre= pathlib.Path(foto).stem + ".jpeg"
-	cv2.imwrite((nombre), green)
-	return nombre
+	return green
+
+def getLightStatus():
+	p = [False,False]
+	for i in (1,2):
+		pin = GPIO_OUT_PINS.get("CAM_LIGHT_" + str(i) )
+		p[i - 1] = GPIO.input(pin) 
+	return p
 	
-def enviarEstadoAgua(): # Retorna Dateime, turbiedad, anomalía, luz en una lista
-	luz=0
-	pin = GPIO_OUT_PINS.get("AC_LIGHT")
-	pin=GPIO.input(pin)
-	if pin==1:
-		luz=True
-	else:
-		luz=False
-	img=cv2.imread(capturarColor(sacarFoto()))
-	hsv=cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
-	negro=cv2.mean(hsv)
-	verde = cv2.inRange(hsv, lower_range, upper_range)
-	promedioHsv = cv2.mean(verde)
-	saturation=promedioHsv[1]/255
-	print(saturation)
-	if saturation>0.80:
-		print("Listo")
-		return [datetime.now(), saturation, False, luz] #Dateime, turbiedad, anomalía, luz
-	elif saturation>0.50:
-		print("En proceso")
-		return [datetime.now(), saturation, False, luz]
-	elif saturation>0.20:
-		print("Empezando")
-		return [datetime.now(), saturation, False, luz]
-	elif negro[2]/255 < 1:
-		print("Error")
-		return [datetime.now(), -1, True, luz] 
-
-
+def getWaterStatus(img):
+    # Convert the image to HSV color space
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    
+    # Extract the green channel (Hue) from the HSV image
+    green_channel = hsv[:, :, 0]
+    
+    # Calculate the average value of non-zero green pixels
+    green_pixels = green_channel[green_channel > 0]
+    avg_green = np.mean(green_pixels)
+    
+    # Calculate the ratio of non-zero green pixels to all pixels
+    total_pixels = green_channel.size
+    green_pixel_count = np.count_nonzero(green_channel) #there is an error here. count just non-zero values
+    pixel_count_ratio = green_pixel_count / total_pixels
+    
+    return (avg_green, pixel_count_ratio)
