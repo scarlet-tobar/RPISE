@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask, request
+from flask import Flask, request, make_response
 from flask_caching import Cache
 from db.db_connection import postgres_connection
 import utils.colorAgua as CA
@@ -85,7 +85,6 @@ def update_luz():
     return "revisado"
 
 last_measure = 0
-
 @app.route('/set/medicion', methods=['POST'])
 def set_medicion():
     global last_measure
