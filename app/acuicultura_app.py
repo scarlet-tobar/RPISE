@@ -37,11 +37,10 @@ def set_horario():
         before,after=after,before
         estado_luz=not estado_luz
 
-    if (before < now and now < after and luz):
-        gpio.named_output("AC_LIGHT", estado_luz)
-    else:
-        gpio.named_output("AC_LIGHT", not estado_luz)
+    if not (before < now and now < after and luz):
+        estado_luz= not estado_luz
 
+    gpio.named_output("AC_LIGHT", estado_luz)
     print(luz, hora_inicio,hora_termino)
 
     cursor = connection.cursor()
