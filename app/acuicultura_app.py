@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask, request
+from flask import Flask, request,jsonify
 from flask_caching import Cache
 from db.db_connection import postgres_connection
 import utils.colorAgua as CA
@@ -46,9 +46,9 @@ def set_horario():
     cache.set(cache_key, {'hora_inicio': hora_inicio, 'hora_termino': hora_termino, 'luz': luz})
 
     print('Se cambió el horario de:', id_estanque)
-    return {"hora_inicio": hora_inicio,
+    return jsonify({"hora_inicio": hora_inicio,
             "hora_termino": hora_termino,
-            "luz":luz}
+            "luz":luz})
 
 
 @app.route('/set/luz', methods=['POST'])
