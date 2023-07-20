@@ -28,6 +28,7 @@ def set_horario():
     if cached_horario and cached_horario.get('hora_inicio') == hora_inicio and cached_horario.get('hora_termino') == hora_termino and cached_horario.get('luz') == luz:
         return "El horario y el estado de luz son los mismos, no se realizó ningún cambio"
 
+    now = datetime.now().time()
     before = datetime.strptime(hora_inicio,"%H:%M")
     after = datetime.strptime(hora_termino,"%H:%M")
     estado_luz= luz=="True"
@@ -36,8 +37,13 @@ def set_horario():
         hora_inicio,hora_termino=hora_termino,hora_inicio
         estado_luz= not estado_luz
 
+    if (before < now and now < after):
+        gpio.named_output("AC_LIGHT", estado_luz)
+    else:
+        gpio.named_output("AC_LIGHT", not estado_luz)
+
     print(luz, hora_inicio,hora_termino)
-    gpio.named_output("AC_LIGHT", luz=="True")
+
     cursor = connection.cursor()
     cursor.execute("UPDATE estanque SET hora_encendido = %s, hora_apagado = %s, luz_encendida= %s WHERE id_estanque = %s", (hora_inicio, hora_termino, luz, id_estanque))
     connection.commit()
