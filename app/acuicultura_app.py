@@ -41,7 +41,6 @@ def set_horario():
         estado_luz= not estado_luz
 
     gpio.named_output("AC_LIGHT", estado_luz)
-    print(estado_luz, hora_inicio,hora_termino)
 
     cursor = connection.cursor()
     cursor.execute("UPDATE estanque SET hora_encendido = %s, hora_apagado = %s, luz_encendida= %s WHERE id_estanque = %s", (hora_inicio, hora_termino, estado_luz, id_estanque))
@@ -52,6 +51,30 @@ def set_horario():
 
     print('Se cambió el horario de:', id_estanque)
     return " Horario actualizado"
+
+@app.route('/update/luz', methods=['POST'])
+def update_luz():
+    data = request.json
+    id_estanque = data.get('id_estanque')
+    hora_inicio = data.get('hora_inicio')
+    hora_termino = data.get('hora_termino')
+    luz = data.get('luz')
+
+    now = datetime.now().time()
+    before = datetime.strptime(hora_inicio,"%H:%M").time()
+    after = datetime.strptime(hora_termino,"%H:%M").time()
+    estado_luz= luz=="True"
+
+    if not (before < now and now < after ):
+        estado_luz= not estado_luz
+        gpio.named_output("AC_LIGHT", estado_luz)
+        cursor = connection.cursor()
+        cursor.execute("UPDATE estanque SET luz_encendida= %s WHERE id_estanque = %s", (hora_inicio, hora_termino, estado_luz, id_estanque))
+        connection.commit()
+        print("actualizado el estado de luz del estanque: ",id_estanque)
+
+    return "revisado"
+
 
 
 # @app.route('/set/medicion', methods=['POST'])
